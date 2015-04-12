@@ -1,0 +1,80 @@
+
+There are 4 commonly used implementations of Map(interface) in Java
+http://www.programcreek.com/2013/03/hashmap-vs-treemap-vs-hashtable-vs-linkedhashmap/
+
+    HashMap is implemented as a hash table, and there is no ordering on keys or values.
+    TreeMap is implemented based on red-black tree structure, and it is ordered by the key.
+    LinkedHashMap preserves the insertion order
+    Hashtable is synchronized, in contrast to HashMap.
+
+    This gives us the reason that HashMap should be used if it is thread-safe, since Hashtable has overhead for synchronization. 
+ 
+Hash Table: basically it maps unique keys to associated values. 
+In the view of implementation, hash table is an array-based data structure, 
+which uses hash function to convert the key into the index of an array element, where associated value is to be found.
+
+Collisions
+
+What happens, if hash function returns the same hash value for different keys? It yields an effect, called collision. 
+Collisions are practically unavoidable and should be considered when one implements hash table. 
+Due to collisions, keys are also stored in the table, so one can distinguish between key-value pairs having the same hash. 
+There are various ways of collision resolution. 
+Basically, there are two different strategies:
+=====================
+Implement a hash table
+
+Let’s name our class HashMap as it is in java.collections framework.
+
+Let’s implement a structure using a simple array.
+
+Load Factor - coefficient of map usage. In java collections the default value is 0.75, let’s take it :)
+
+What is the principle of HashMap implementation?
+
+In memory we have a list of Entry objects (described below). In case load of map reaches load factor - we call resize() method (let’s make this method private).
+
+Add of elements: getting int hashcode = key.hashCode(), converting it to a hash code, which will act as an index in our array. This way, while implementing hash table/map the main problem is to chose a perfect hash-function. Let’s see how it’s implemented in java collections:
+
+    static int hash(int h)
+
+    {
+
+        h ^= (h »> 20) ^ (h »> 12);
+
+        return h ^ (h »> 7) ^ (h »> 4);
+
+    }
+
+The function was taken from series of experiments which gave good results with default load factor. We won’t re-invent a bicycle and take this function :)
+
+What if hash(key, hashCode()) will be the same for several elements? In an array the i-th element will contain an entry with the first saved element. It will store a link to the next element. This means that we store an array of linked lists.
+
+The worst case of get() operation has complexity O(n). But in practice the complexity is near O(1).
+
+Algorithm of adding an element to hash table:
+
+    Check the load of an array. If it is bigger than load factor - call resize()
+    Calculate hash; if in array there aren’t any elements with this hash-index - insert id. Unless we come through a linked list of elements with his hash and check whether an entry with the same key exists. If so, change its value. If a list doesn’t contain it - we add the Entry to the end of this list.
+
+Algorithms of deletion and search are the same.
+
+Source code: 
+https://docs.google.com/document/pub?id=1AIR2118jau89haU3327UxBnbZEFi6lLIMO0xGo3Cqbc
+
+================
+Amazon Interview Question Software Engineer/ evelopers:
+
+i think they want you to write a new class HashTable using a HashMap.
+- check to ensure that the keys/valus are not null
+- synchronize put/containsKey/contains/get
+
+
+You can take a look at the Hashtable class in the JDK source code.
+The implementation is huge.
+
+but basically,
+1) you need to syncronized any operation that alters the table, because Hashtable are syncronized.
+2) get, put and contains should run in avg O(1)
+3) you need to provide a way to deal with collitions
+4) you need to implement an efficient hashcode method for the keys
+5) care need to be taken when modifying the load factor and initial capacity of the hashTable
